@@ -1,6 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:adaptamat/core/database/database_helper.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Verificar inicialización de base de datos
+  try {
+    // ignore: unused_local_variable
+    final db = await DatabaseHelper().database;
+    // ignore: avoid_print
+    print('✓ Base de datos inicializada correctamente');
+  } catch (e) {
+    // ignore: avoid_print
+    print('✗ Error al inicializar base de datos: $e');
+  }
+  
   runApp(const AdaptaMatApp());
 }
 
