@@ -1,67 +1,72 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:adaptamat/core/database/database_helper.dart';
+import 'package:adaptamat/data/datasources/estudiante_datasource.dart';
 import 'package:adaptamat/data/datasources/item_sesion_datasource.dart';
+import 'package:adaptamat/domain/entities/estudiante.dart';
 import 'package:adaptamat/domain/entities/item.dart';
-import 'package:adaptamat/domain/usecases/motor_adaptativo.dart';
-import 'package:adaptamat/presentation/screens/prueba_widgets_screen.dart';
+import 'package:adaptamat/presentation/blocs/sesion_bloc.dart';
+import 'package:adaptamat/presentation/screens/home_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
-  // Verificar inicialización de base de datos
+
+  // Inicializar base de datos
   try {
-    // ignore: unused_local_variable
-    final db = await DatabaseHelper().database;
+    await DatabaseHelper().database;
     // ignore: avoid_print
-    print('✓ Base de datos inicializada correctamente');
+    print('✓ Base de datos inicializada');
   } catch (e) {
     // ignore: avoid_print
-    print('✗ Error al inicializar base de datos: $e');
+    print('✗ Error BD: $e');
   }
 
   // Cargar banco de ítems si está vacío
   try {
-    final itemDatasource = ItemDatasource();
-    final bancoVacio = await itemDatasource.bancoVacio();
-    
-    if (bancoVacio) {
-      // Cargar JSON desde assets
-      final jsonString = await rootBundle.loadString('assets/items/banco_items.json');
-      final List<dynamic> jsonData = jsonDecode(jsonString);
-      
-      // Convertir a objetos Item
-      final items = jsonData.map((item) {
+    final itemDs = ItemDatasource();
+    if (await itemDs.bancoVacio()) {
+      final jsonString =
+          await rootBundle.loadString('assets/items/banco_items.json');
+      final items = (jsonDecode(jsonString) as List).map((e) {
         return Item(
-          tema: item['tema'] as String,
-          subtema: item['subtema'] as String,
-          dificultadB: (item['dificultad_b'] as num).toDouble(),
-          enunciado: item['enunciado'] as String,
-          opciones: List<String>.from(item['opciones'] as List),
-          respuestaCorrecta: item['respuesta_correcta'] as int,
-          codigoPatronDistractor: item['codigo_patron_distractor'] as String,
+          tema: e['tema'] as String,
+          subtema: e['subtema'] as String,
+          dificultadB: (e['dificultad_b'] as num).toDouble(),
+          enunciado: e['enunciado'] as String,
+          opciones: List<String>.from(e['opciones'] as List),
+          respuestaCorrecta: e['respuesta_correcta'] as int,
+          codigoPatronDistractor: e['codigo_patron_distractor'] as String,
         );
       }).toList();
-      
-      // Insertar lote de ítems
-      await itemDatasource.insertarLote(items);
+      await itemDs.insertarLote(items);
       // ignore: avoid_print
-      print('✓ Banco de ítems cargado: ${items.length} ítems insertados');
-    } else {
-      // ignore: avoid_print
-      print('✓ Banco de ítems ya existe en base de datos');
+      print('✓ Banco de ítems cargado: ${items.length} ítems');
     }
   } catch (e) {
     // ignore: avoid_print
-    print('✗ Error al cargar banco de ítems: $e');
+    print('✗ Error banco: $e');
   }
-  
-  // Test manual — motor adaptativo
-  // ignore: avoid_print
-  print(MotorAdaptativo.actualizarTheta(0.0, true));                        // 0.3
-  // ignore: avoid_print
-  print(MotorAdaptativo.evaluarDominio(theta: 1.1, itemsRespondidos: 5));   // true
+
+  // Crear estudiante de prueba si no existe ninguno
+  try {
+    final estudianteDs = EstudianteDatasource();
+    final todos = await estudianteDs.obtenerTodos();
+    if (todos.isEmpty) {
+      await estudianteDs.insertar(Estudiante(
+        nombre: 'Estudiante Demo',
+        grado: '1ro Primaria',
+        thetaActual: 0.0,
+        fechaRegistro: DateTime.now(),
+      ));
+      // ignore: avoid_print
+      print('✓ Estudiante de prueba creado');
+    }
+  } catch (e) {
+    // ignore: avoid_print
+    print('✗ Error estudiante: $e');
+  }
 
   runApp(const AdaptaMatApp());
 }
@@ -71,14 +76,17 @@ class AdaptaMatApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'AdaptaMat',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
-        useMaterial3: true,
+    return BlocProvider(
+      create: (_) => SesionBloc(),
+      child: MaterialApp(
+        title: 'AdaptaMat',
+        debugShowCheckedModeBanner: false,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1F3864)),
+          useMaterial3: true,
+        ),
+        home: const HomeScreen(),
       ),
-      home: const PruebaWidgetsScreen(),
     );
   }
 }
