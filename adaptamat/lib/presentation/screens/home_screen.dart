@@ -5,6 +5,15 @@ import 'package:adaptamat/data/datasources/estudiante_datasource.dart';
 import 'package:adaptamat/domain/entities/estudiante.dart';
 import 'package:adaptamat/presentation/screens/sesion_screen.dart';
 
+// Estudiante de prueba usado cuando la BD no está disponible (ej: web).
+final _estudianteFallback = Estudiante(
+  id: 1,
+  nombre: 'Estudiante Demo',
+  grado: '1ro Primaria',
+  thetaActual: 0.0,
+  fechaRegistro: DateTime(2025),
+);
+
 const _azulOscuro = Color(0xFF1F3864);
 
 class HomeScreen extends StatefulWidget {
@@ -28,11 +37,15 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final todos = await EstudianteDatasource().obtenerTodos();
       setState(() {
-        _estudiante = todos.isNotEmpty ? todos.first : null;
+        _estudiante = todos.isNotEmpty ? todos.first : _estudianteFallback;
         _cargando = false;
       });
     } catch (_) {
-      setState(() => _cargando = false);
+      // BD no disponible (ej: web) — usar estudiante de prueba en memoria.
+      setState(() {
+        _estudiante = _estudianteFallback;
+        _cargando = false;
+      });
     }
   }
 

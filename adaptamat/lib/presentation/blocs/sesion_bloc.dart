@@ -43,8 +43,19 @@ class ResponderItem extends SesionEvent {
   List<Object?> get props => [respuestaDada];
 }
 
+/// El usuario leyó la retroalimentación y presionó "Continuar".
+class ContinuarTrasRetroalimentacion extends SesionEvent {
+  const ContinuarTrasRetroalimentacion();
+}
+
+/// El usuario leyó la remediación y presionó "Entendido, continuar".
 class ContinuarTrasRemediacion extends SesionEvent {
   const ContinuarTrasRemediacion();
+}
+
+/// El usuario confirmó el logro de dominio y avanza al siguiente subtema.
+class AvanzarSubtema extends SesionEvent {
+  const AvanzarSubtema();
 }
 
 class FinalizarSesion extends SesionEvent {
@@ -87,14 +98,16 @@ class SesionConItem extends SesionState {
 class SesionRetroalimentacion extends SesionState {
   final bool correcto;
   final int respuestaCorrecta;
+  final String respuestaCorrectaTexto;
 
   const SesionRetroalimentacion({
     required this.correcto,
     required this.respuestaCorrecta,
+    required this.respuestaCorrectaTexto,
   });
 
   @override
-  List<Object?> get props => [correcto, respuestaCorrecta];
+  List<Object?> get props => [correcto, respuestaCorrecta, respuestaCorrectaTexto];
 }
 
 class SesionRemediacion extends SesionState {
@@ -162,10 +175,16 @@ class SesionBloc extends Bloc<SesionEvent, SesionState> {
   final Set<int> _presentados = {};
   final List<Respuesta> _historial = [];
 
+  // Patrón detectado pendiente de mostrarse tras la retroalimentación
+  String? _patronPendiente;
+  String? _contenidoPendiente;
+
   SesionBloc() : super(const SesionInicial()) {
     on<IniciarSesion>(_onIniciarSesion);
     on<ResponderItem>(_onResponderItem);
+    on<ContinuarTrasRetroalimentacion>(_onContinuarTrasRetroalimentacion);
     on<ContinuarTrasRemediacion>(_onContinuarTrasRemediacion);
+    on<AvanzarSubtema>(_onAvanzarSubtema);
     on<FinalizarSesion>(_onFinalizarSesion);
   }
 
@@ -182,8 +201,15 @@ class SesionBloc extends Bloc<SesionEvent, SesionState> {
       _itemsRespondidos = 0;
       _presentados.clear();
       _historial.clear();
+      _patronPendiente = null;
+      _contenidoPendiente = null;
 
       _banco = await _itemDs.obtenerPorSubtema(_subtema);
+
+      if (_banco.isEmpty) {
+        emit(const SesionError('El banco de ítems está vacío. Reinstala la app.'));
+        return;
+      }
 
       _sesionId = await _sesionDs.iniciarSesion(Sesion(
         estudianteId: event.estudianteId,
@@ -195,12 +221,7 @@ class SesionBloc extends Bloc<SesionEvent, SesionState> {
           MotorAdaptativo.seleccionarItemsDiagnostico(_subtema, _banco);
       final candidatos = diagnostico.isNotEmpty ? diagnostico : _banco;
 
-      _itemActual = candidatos.isNotEmpty ? candidatos.first : null;
-      if (_itemActual == null) {
-        emit(const SesionError('No hay ítems disponibles para este subtema.'));
-        return;
-      }
-
+      _itemActual = candidatos.first;
       if (_itemActual!.id != null) _presentados.add(_itemActual!.id!);
 
       emit(SesionConItem(
@@ -215,6 +236,8 @@ class SesionBloc extends Bloc<SesionEvent, SesionState> {
   }
 
   // ── ResponderItem ──────────────────────────────────────────────────────────
+  // Solo registra la respuesta y emite retroalimentación.
+  // La transición al siguiente estado ocurre en ContinuarTrasRetroalimentacion.
   Future<void> _onResponderItem(
     ResponderItem event,
     Emitter<SesionState> emit,
@@ -236,11 +259,7 @@ class SesionBloc extends Bloc<SesionEvent, SesionState> {
     _theta = MotorAdaptativo.actualizarTheta(_theta, correcto);
     _itemsRespondidos++;
 
-    emit(SesionRetroalimentacion(
-      correcto: correcto,
-      respuestaCorrecta: _itemActual!.respuestaCorrecta,
-    ));
-
+    // Detectar patrón y guardarlo para mostrarlo tras la retroalimentación
     final patron = DiagnosticoPatrones.evaluar(
       _historial,
       _subtema,
@@ -250,12 +269,37 @@ class SesionBloc extends Bloc<SesionEvent, SesionState> {
     );
 
     if (patron != null) {
+      _patronPendiente = patron;
       await _sesionDs.registrarOActualizarPatron(_estudianteId!, patron);
-      final contenido = await _sesionDs.obtenerContenidoRemediacion(patron);
-      emit(SesionRemediacion(codigoPatron: patron, contenido: contenido));
-      return;
+      _contenidoPendiente =
+          await _sesionDs.obtenerContenidoRemediacion(patron);
+    } else {
+      _patronPendiente = null;
+      _contenidoPendiente = null;
     }
 
+    emit(SesionRetroalimentacion(
+      correcto: correcto,
+      respuestaCorrecta: _itemActual!.respuestaCorrecta,
+      respuestaCorrectaTexto:
+          _itemActual!.opciones[_itemActual!.respuestaCorrecta],
+    ));
+  }
+
+  // ── ContinuarTrasRetroalimentacion ─────────────────────────────────────────
+  Future<void> _onContinuarTrasRetroalimentacion(
+    ContinuarTrasRetroalimentacion event,
+    Emitter<SesionState> emit,
+  ) async {
+    if (_patronPendiente != null) {
+      emit(SesionRemediacion(
+        codigoPatron: _patronPendiente!,
+        contenido: _contenidoPendiente,
+      ));
+      _patronPendiente = null;
+      _contenidoPendiente = null;
+      return;
+    }
     await _emitirSiguienteEstado(emit);
   }
 
@@ -265,6 +309,51 @@ class SesionBloc extends Bloc<SesionEvent, SesionState> {
     Emitter<SesionState> emit,
   ) async {
     await _emitirSiguienteEstado(emit);
+  }
+
+  // ── AvanzarSubtema ─────────────────────────────────────────────────────────
+  Future<void> _onAvanzarSubtema(
+    AvanzarSubtema event,
+    Emitter<SesionState> emit,
+  ) async {
+    final siguiente = MapaPrerequisitos.siguienteSubtema(_subtema);
+
+    if (siguiente == null) {
+      if (_sesionId != null) await _sesionDs.cerrarSesion(_sesionId!);
+      emit(SesionFinalizada(
+        thetaFinal: _theta,
+        itemsRespondidos: _itemsRespondidos,
+      ));
+      return;
+    }
+
+    emit(const SesionCargando());
+    try {
+      _subtema = siguiente;
+      _banco = await _itemDs.obtenerPorSubtema(_subtema);
+      _presentados.clear();
+
+      if (_banco.isEmpty) {
+        emit(const SesionError('No hay ítems para el siguiente subtema.'));
+        return;
+      }
+
+      final diagnostico =
+          MotorAdaptativo.seleccionarItemsDiagnostico(_subtema, _banco);
+      final candidatos = diagnostico.isNotEmpty ? diagnostico : _banco;
+
+      _itemActual = candidatos.first;
+      if (_itemActual!.id != null) _presentados.add(_itemActual!.id!);
+
+      emit(SesionConItem(
+        item: _itemActual!,
+        theta: _theta,
+        itemsRespondidos: _itemsRespondidos,
+        subtemaActivo: _subtema,
+      ));
+    } catch (e) {
+      emit(SesionError('Error al cargar el siguiente subtema: $e'));
+    }
   }
 
   // ── FinalizarSesion ────────────────────────────────────────────────────────
@@ -303,9 +392,11 @@ class SesionBloc extends Bloc<SesionEvent, SesionState> {
     );
 
     if (siguiente == null) {
-      emit(SesionSubtemaDominado(
-        subtema: _subtema,
-        siguienteSubtema: MapaPrerequisitos.siguienteSubtema(_subtema),
+      // Sin más ítems disponibles → finalizar sesión automáticamente
+      if (_sesionId != null) await _sesionDs.cerrarSesion(_sesionId!);
+      emit(SesionFinalizada(
+        thetaFinal: _theta,
+        itemsRespondidos: _itemsRespondidos,
       ));
       return;
     }

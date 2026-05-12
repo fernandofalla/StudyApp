@@ -16,12 +16,7 @@ void main() async {
   // Inicializar base de datos
   try {
     await DatabaseHelper().database;
-    // ignore: avoid_print
-    print('✓ Base de datos inicializada');
-  } catch (e) {
-    // ignore: avoid_print
-    print('✗ Error BD: $e');
-  }
+  } catch (_) {}
 
   // Cargar banco de ítems si está vacío
   try {
@@ -41,13 +36,8 @@ void main() async {
         );
       }).toList();
       await itemDs.insertarLote(items);
-      // ignore: avoid_print
-      print('✓ Banco de ítems cargado: ${items.length} ítems');
     }
-  } catch (e) {
-    // ignore: avoid_print
-    print('✗ Error banco: $e');
-  }
+  } catch (_) {}
 
   // Crear estudiante de prueba si no existe ninguno
   try {
@@ -60,13 +50,8 @@ void main() async {
         thetaActual: 0.0,
         fechaRegistro: DateTime.now(),
       ));
-      // ignore: avoid_print
-      print('✓ Estudiante de prueba creado');
     }
-  } catch (e) {
-    // ignore: avoid_print
-    print('✗ Error estudiante: $e');
-  }
+  } catch (_) {}
 
   runApp(const AdaptaMatApp());
 }

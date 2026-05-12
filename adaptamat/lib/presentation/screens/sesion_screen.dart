@@ -110,8 +110,10 @@ class _SesionView extends StatelessWidget {
     if (state is SesionRetroalimentacion) {
       return RetroalimentacionWidget(
         correcto: state.correcto,
-        respuestaCorrecta: state.correcto ? '' : 'opción ${state.respuestaCorrecta + 1}',
-        onContinuar: () {},
+        respuestaCorrecta: state.respuestaCorrectaTexto,
+        onContinuar: () => context
+            .read<SesionBloc>()
+            .add(const ContinuarTrasRetroalimentacion()),
       );
     }
 
@@ -163,8 +165,10 @@ class _SesionView extends StatelessWidget {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.pop(context); // cierra el dialog
-              if (state.siguienteSubtema == null) {
+              Navigator.pop(context);
+              if (state.siguienteSubtema != null) {
+                context.read<SesionBloc>().add(const AvanzarSubtema());
+              } else {
                 context.read<SesionBloc>().add(const FinalizarSesion());
               }
             },
