@@ -1,1 +1,164 @@
-[]
+[
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "conteo",
+    "dificultad_b": -2.0,
+    "enunciado": "¿Cuántos palitos hay en la imagen?",
+    "opciones": ["2", "3", "4", "5"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-01"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "conteo",
+    "dificultad_b": -1.5,
+    "enunciado": "Cuenta los círculos azules. ¿Cuántos son?",
+    "opciones": ["4", "5", "6", "7"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-01"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "conteo",
+    "dificultad_b": -0.8,
+    "enunciado": "¿Cuántas manzanas hay en el árbol?",
+    "opciones": ["6", "7", "8", "9"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-01"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "conteo",
+    "dificultad_b": 0.2,
+    "enunciado": "Si tienes 5 caramelos y tu amiga te da 3 más, ¿cuántos tienes ahora?",
+    "opciones": ["6", "7", "8", "9"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-02"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "valor_posicional",
+    "dificultad_b": -1.2,
+    "enunciado": "El número 15 tiene un 1 en el lugar de las... ¿cuál es?",
+    "opciones": ["unidades", "decenas", "centenas", "miles"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-03"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "valor_posicional",
+    "dificultad_b": -0.5,
+    "enunciado": "¿Qué número tiene 2 decenas y 3 unidades?",
+    "opciones": ["23", "32", "203", "320"],
+    "respuesta_correcta": 0,
+    "codigo_patron_distractor": "PE-03"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "valor_posicional",
+    "dificultad_b": 0.8,
+    "enunciado": "En el número 47, ¿cuál es el dígito de las decenas?",
+    "opciones": ["4", "7", "47", "74"],
+    "respuesta_correcta": 0,
+    "codigo_patron_distractor": "PE-03"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "adicion",
+    "dificultad_b": -1.0,
+    "enunciado": "¿Cuánto es 2 + 1?",
+    "opciones": ["1", "2", "3", "4"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-02"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "adicion",
+    "dificultad_b": -0.2,
+    "enunciado": "¿Cuánto es 3 + 4?",
+    "opciones": ["5", "6", "7", "8"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-02"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "adicion",
+    "dificultad_b": 1.0,
+    "enunciado": "¿Cuánto es 8 + 5?",
+    "opciones": ["11", "12", "13", "14"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-02"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "sustraccion",
+    "dificultad_b": -0.5,
+    "enunciado": "¿Cuánto es 5 - 2?",
+    "opciones": ["1", "2", "3", "4"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-04"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "sustraccion",
+    "dificultad_b": 1.2,
+    "enunciado": "¿Cuánto es 12 - 7?",
+    "opciones": ["3", "4", "5", "6"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-04"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "atributos_geometricos",
+    "dificultad_b": -1.8,
+    "enunciado": "¿Cuántos lados tiene un cuadrado?",
+    "opciones": ["2", "3", "4", "5"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-05"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "atributos_geometricos",
+    "dificultad_b": -0.8,
+    "enunciado": "¿Cuántos vértices tiene un triángulo?",
+    "opciones": ["2", "3", "4", "5"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-05"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "atributos_geometricos",
+    "dificultad_b": 0.5,
+    "enunciado": "¿Cuál de estas formas tiene más lados?",
+    "opciones": ["triángulo", "cuadrado", "pentágono", "círculo"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-05"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "figuras_geometricas",
+    "dificultad_b": -1.0,
+    "enunciado": "¿Cuál es el nombre de esta forma con 4 lados iguales?",
+    "opciones": ["rectángulo", "cuadrado", "rombo", "trapecio"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-05"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "figuras_geometricas",
+    "dificultad_b": 0.3,
+    "enunciado": "¿A cuál de estas figuras se parece un dado?",
+    "opciones": ["círculo", "cuadrado", "cubo", "esfera"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-06"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "clasificacion_geometrica",
+    "dificultad_b": 0.9,
+    "enunciado": "¿Cuál grupo tiene solo figuras con ángulos?",
+    "opciones": ["círculo y esfera", "triángulo y cuadrado", "pelota y círculo", "esfera y cilindro"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-06"
+  }
+]
