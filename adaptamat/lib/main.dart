@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:adaptamat/core/database/database_helper.dart';
 import 'package:adaptamat/data/datasources/item_sesion_datasource.dart';
 import 'package:adaptamat/domain/entities/item.dart';
+import 'package:adaptamat/domain/usecases/motor_adaptativo.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -55,6 +56,12 @@ void main() async {
     print('✗ Error al cargar banco de ítems: $e');
   }
   
+  // Test manual — motor adaptativo
+  // ignore: avoid_print
+  print(MotorAdaptativo.actualizarTheta(0.0, true));                        // 0.3
+  // ignore: avoid_print
+  print(MotorAdaptativo.evaluarDominio(theta: 1.1, itemsRespondidos: 5));   // true
+
   runApp(const AdaptaMatApp());
 }
 
