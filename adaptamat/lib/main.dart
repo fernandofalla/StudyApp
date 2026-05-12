@@ -5,6 +5,7 @@ import 'package:adaptamat/core/database/database_helper.dart';
 import 'package:adaptamat/data/datasources/item_sesion_datasource.dart';
 import 'package:adaptamat/domain/entities/item.dart';
 import 'package:adaptamat/domain/usecases/motor_adaptativo.dart';
+import 'package:adaptamat/presentation/screens/prueba_widgets_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,17 +78,7 @@ class AdaptaMatApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
         useMaterial3: true,
       ),
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'AdaptaMat',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
-      ),
+      home: const PruebaWidgetsScreen(),
     );
   }
 }
