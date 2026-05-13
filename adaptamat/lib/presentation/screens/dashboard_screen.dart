@@ -6,6 +6,8 @@ import 'package:adaptamat/domain/usecases/resumen_grupo.dart';
 import 'package:adaptamat/presentation/blocs/dashboard_bloc.dart';
 import 'package:adaptamat/presentation/screens/exportacion_screen.dart';
 import 'package:adaptamat/presentation/screens/perfil_estudiante_screen.dart';
+import 'package:adaptamat/presentation/widgets/barra_patron_widget.dart';
+import 'package:adaptamat/presentation/widgets/tarjeta_estudiante_widget.dart';
 
 const _azulOscuro = Color(0xFF1F3864);
 
@@ -135,15 +137,12 @@ class _DashboardView extends StatelessWidget {
               itemCount: state.resumenGrupo.length,
               itemBuilder: (_, i) {
                 final est = state.resumenGrupo[i];
-                return _TarjetaEstudiante(
+                return TarjetaEstudianteWidget(
                   datos: est,
-                  onTap: () {
-                    final id = est['id'] as int?;
-                    if (id != null) {
-                      context
-                          .read<DashboardBloc>()
-                          .add(SeleccionarEstudiante(id));
-                    }
+                  onSeleccionar: (id) {
+                    context
+                        .read<DashboardBloc>()
+                        .add(SeleccionarEstudiante(id));
                   },
                 );
               },
@@ -325,6 +324,14 @@ class _PanelPatrones extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final maxFrecuencia = patronesGrupo.fold<int>(
+      0,
+      (m, p) {
+        final f = (p['frecuencia_total'] as int?) ?? 0;
+        return f > m ? f : m;
+      },
+    );
+
     return Container(
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
       padding: const EdgeInsets.all(14),
@@ -344,150 +351,16 @@ class _PanelPatrones extends StatelessWidget {
               color: Colors.black87,
             ),
           ),
-          const SizedBox(height: 8),
           ...patronesGrupo.take(3).map((p) {
-            final codigo = p['codigo_patron'] as String;
-            final frecTotal = p['frecuencia_total'] ?? 0;
-            final afectados = p['estudiantes_afectados'] ?? 0;
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 8, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: _azulOscuro.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      codigo,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: _azulOscuro,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      ResumenGrupo.descripcionPatron(codigo),
-                      style: const TextStyle(
-                          fontSize: 12, color: Colors.black87),
-                    ),
-                  ),
-                  Text(
-                    '$frecTotal×  $afectados est.',
-                    style: TextStyle(
-                        fontSize: 11, color: Colors.grey.shade600),
-                  ),
-                ],
-              ),
+            return BarraPatronWidget(
+              codigoPatron: p['codigo_patron'] as String,
+              frecuenciaTotal: (p['frecuencia_total'] as int?) ?? 0,
+              estudiantesAfectados:
+                  (p['estudiantes_afectados'] as int?) ?? 0,
+              maxFrecuencia: maxFrecuencia,
             );
           }),
         ],
-      ),
-    );
-  }
-}
-
-// ─── Tarjeta de estudiante (inline, basada en Map) ────────────────────────────
-
-class _TarjetaEstudiante extends StatelessWidget {
-  final Map<String, dynamic> datos;
-  final VoidCallback onTap;
-
-  const _TarjetaEstudiante({required this.datos, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    final nombre = datos['nombre'] as String? ?? '—';
-    final theta = (datos['theta_actual'] as num?)?.toDouble() ?? 0.0;
-    final sesiones = datos['total_sesiones'] ?? 0;
-    final nivel = ResumenGrupo.nivelDesdeTheta(theta);
-    final colorNivel = ResumenGrupo.colorDesdeNivel(nivel);
-
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
-      elevation: 2,
-      shape:
-          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding:
-              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          child: Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: _azulOscuro.withValues(alpha: 0.1),
-                radius: 22,
-                child: Text(
-                  nombre.isNotEmpty ? nombre[0].toUpperCase() : '?',
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: _azulOscuro,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      nombre,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        _NivelChip(nivel: nivel, color: colorNivel),
-                        const SizedBox(width: 6),
-                        Text(
-                          'θ ${theta.toStringAsFixed(2)}  ·  $sesiones sesión${sesiones != 1 ? 'es' : ''}',
-                          style: TextStyle(
-                              fontSize: 12, color: Colors.grey.shade600),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right_rounded, color: Colors.grey),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _NivelChip extends StatelessWidget {
-  final String nivel;
-  final Color color;
-  const _NivelChip({required this.nivel, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
-      ),
-      child: Text(
-        nivel,
-        style: TextStyle(
-            fontSize: 11, color: color, fontWeight: FontWeight.w600),
       ),
     );
   }

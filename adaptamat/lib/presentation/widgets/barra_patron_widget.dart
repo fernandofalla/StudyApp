@@ -1,111 +1,117 @@
 // lib/presentation/widgets/barra_patron_widget.dart
 
 import 'package:flutter/material.dart';
-import 'package:adaptamat/data/datasources/dashboard_datasource.dart';
 import 'package:adaptamat/domain/usecases/resumen_grupo.dart';
 
-const _azulOscuro = Color(0xFF1F3864);
+const _colorBarra = Color(0xFFC62828);
 
+/// Barra de frecuencia de un patrón de error del grupo.
+///
+/// Ejemplo visual:
+///   Error de reagrupación en adición
+///   ████████████████░░░░  8 veces · 3 estudiantes
 class BarraPatronWidget extends StatelessWidget {
-  final PatronResumen patron;
+  final String codigoPatron;
+  final int frecuenciaTotal;
+  final int estudiantesAfectados;
   final int maxFrecuencia;
 
   const BarraPatronWidget({
     super.key,
-    required this.patron,
+    required this.codigoPatron,
+    required this.frecuenciaTotal,
+    required this.estudiantesAfectados,
     required this.maxFrecuencia,
   });
 
   @override
   Widget build(BuildContext context) {
-    final fraccion = maxFrecuencia > 0 ? patron.frecuencia / maxFrecuencia : 0.0;
-    final descripcion = ResumenGrupo.descripcionPatron(patron.codigoPatron);
+    final nombre = ResumenGrupo.descripcionPatron(codigoPatron);
+    final fraccion =
+        maxFrecuencia > 0 ? frecuenciaTotal / maxFrecuencia : 0.0;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Nombre del patrón
           Row(
             children: [
-              SizedBox(
-                width: 52,
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: _colorBarra.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
                 child: Text(
-                  patron.codigoPatron,
+                  codigoPatron,
                   style: const TextStyle(
-                    fontSize: 13,
+                    fontSize: 11,
                     fontWeight: FontWeight.bold,
-                    color: _azulOscuro,
+                    color: _colorBarra,
                   ),
                 ),
               ),
-              Expanded(
-                child: LayoutBuilder(
-                  builder: (_, constraints) {
-                    return Stack(
-                      children: [
-                        Container(
-                          height: 20,
-                          width: constraints.maxWidth,
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        Container(
-                          height: 20,
-                          width: constraints.maxWidth * fraccion,
-                          decoration: BoxDecoration(
-                            color: _colorPatron(patron.codigoPatron),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
               const SizedBox(width: 8),
-              Text(
-                '${patron.frecuencia}x',
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
+              Expanded(
+                child: Text(
+                  nombre,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 2),
-          Padding(
-            padding: const EdgeInsets.only(left: 52),
-            child: Text(
-              descripcion,
-              style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-            ),
+          const SizedBox(height: 6),
+          // Barra + etiqueta
+          Row(
+            children: [
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (_, constraints) {
+                    final totalWidth = constraints.maxWidth;
+                    final filledWidth = totalWidth * fraccion;
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(4),
+                      child: Stack(
+                        children: [
+                          // Fondo vacío
+                          Container(
+                            height: 18,
+                            width: totalWidth,
+                            color: Colors.grey.shade200,
+                          ),
+                          // Relleno proporcional
+                          Container(
+                            height: 18,
+                            width: filledWidth,
+                            color: _colorBarra,
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                '$frecuenciaTotal ${frecuenciaTotal == 1 ? 'vez' : 'veces'} · '
+                '$estudiantesAfectados est.',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey.shade700,
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
-
-  Color _colorPatron(String codigo) {
-    switch (codigo) {
-      case 'PE-01':
-        return Colors.orange.shade400;
-      case 'PE-02':
-        return Colors.blue.shade400;
-      case 'PE-03':
-        return Colors.purple.shade400;
-      case 'PE-04':
-        return Colors.red.shade400;
-      case 'PE-05':
-        return Colors.teal.shade400;
-      case 'PE-06':
-        return Colors.green.shade400;
-      default:
-        return Colors.grey.shade400;
-    }
-  }
-
 }

@@ -131,16 +131,16 @@ class PerfilEstudianteScreen extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      ...patrones.map((p) {
+                      ...() {
                         final maxFrecuencia = patrones.fold<int>(
-                            0,
-                            (m, x) =>
-                                x.frecuencia > m ? x.frecuencia : m);
-                        return BarraPatronWidget(
-                          patron: p,
-                          maxFrecuencia: maxFrecuencia,
-                        );
-                      }),
+                            0, (m, x) => x.frecuencia > m ? x.frecuencia : m);
+                        return patrones.map((p) => BarraPatronWidget(
+                              codigoPatron: p.codigoPatron,
+                              frecuenciaTotal: p.frecuencia,
+                              estudiantesAfectados: 1,
+                              maxFrecuencia: maxFrecuencia,
+                            ));
+                      }(),
                     ],
                   ),
                 ),
