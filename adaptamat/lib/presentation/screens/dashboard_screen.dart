@@ -221,10 +221,9 @@ class _BarraDistribucion extends StatelessWidget {
     if (total == 0) return const SizedBox.shrink();
 
     final niveles = [
-      ('Inicial', Colors.red.shade300),
-      ('Básico', Colors.orange.shade300),
-      ('Intermedio', Colors.blue.shade300),
-      ('Avanzado', Colors.green.shade300),
+      ('Inicio', const Color(0xFFC62828)),
+      ('En proceso', const Color(0xFFF9A825)),
+      ('Logrado', const Color(0xFF2E7D32)),
     ];
 
     return Column(

@@ -19,7 +19,7 @@ class TarjetaEstudianteWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final nivel = ResumenGrupo.nivelDesdeTheta(estudiante.thetaActual);
-    final colorNivel = _colorNivel(nivel);
+    final colorNivel = ResumenGrupo.colorDesdeNivel(nivel);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -94,20 +94,6 @@ class TarjetaEstudianteWidget extends StatelessWidget {
     );
   }
 
-  Color _colorNivel(String nivel) {
-    switch (nivel) {
-      case 'Inicial':
-        return Colors.red.shade600;
-      case 'Básico':
-        return Colors.orange.shade700;
-      case 'Intermedio':
-        return Colors.blue.shade700;
-      case 'Avanzado':
-        return Colors.green.shade700;
-      default:
-        return Colors.grey;
-    }
-  }
 }
 
 class _Chip extends StatelessWidget {

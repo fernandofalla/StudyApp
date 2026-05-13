@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:adaptamat/data/datasources/dashboard_datasource.dart';
+import 'package:adaptamat/domain/usecases/resumen_grupo.dart';
 
 const _azulOscuro = Color(0xFF1F3864);
 
@@ -18,7 +19,7 @@ class BarraPatronWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final fraccion = maxFrecuencia > 0 ? patron.frecuencia / maxFrecuencia : 0.0;
-    final descripcion = _descripcionPatron(patron.codigoPatron);
+    final descripcion = ResumenGrupo.descripcionPatron(patron.codigoPatron);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -107,22 +108,4 @@ class BarraPatronWidget extends StatelessWidget {
     }
   }
 
-  String _descripcionPatron(String codigo) {
-    switch (codigo) {
-      case 'PE-01':
-        return 'Error de conteo (subestimación)';
-      case 'PE-02':
-        return 'Error de valor posicional (+1)';
-      case 'PE-03':
-        return 'Perseveración de respuesta';
-      case 'PE-04':
-        return 'Error de valor posicional (amplio)';
-      case 'PE-05':
-        return 'Confusión de atributos geométricos';
-      case 'PE-06':
-        return 'Confusión de figuras geométricas';
-      default:
-        return 'Patrón desconocido';
-    }
-  }
 }

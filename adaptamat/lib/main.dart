@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:adaptamat/core/database/database_helper.dart';
 import 'package:adaptamat/data/datasources/dashboard_datasource.dart';
+import 'package:adaptamat/domain/usecases/resumen_grupo.dart';
 import 'package:adaptamat/data/datasources/estudiante_datasource.dart';
 import 'package:adaptamat/data/datasources/item_sesion_datasource.dart';
 import 'package:adaptamat/domain/entities/estudiante.dart';
@@ -56,6 +57,12 @@ void main() async {
   } catch (_) {}
 
   // VERIFICACIÓN TEMPORAL — eliminar antes de entrega
+  // ignore: avoid_print
+  print(ResumenGrupo.nivelDesdeTheta(-0.5)); // Inicio
+  // ignore: avoid_print
+  print(ResumenGrupo.nivelDesdeTheta(0.5));  // En proceso
+  // ignore: avoid_print
+  print(ResumenGrupo.nivelDesdeTheta(1.2));  // Logrado
   try {
     final dashDs = DashboardDatasource();
     final resumen = await dashDs.obtenerResumenGrupo();
