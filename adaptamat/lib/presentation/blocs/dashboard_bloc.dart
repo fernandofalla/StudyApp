@@ -161,76 +161,52 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   String _construirTextoReporte() {
     final now = DateTime.now();
     final fecha =
-        '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year} '
-        '${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}';
+        '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}';
+    const sep = '─────────────────────────────────────';
 
     final buf = StringBuffer();
-    buf.writeln('══════════════════════════════════════');
-    buf.writeln('  REPORTE DE PROGRESO — AdaptaMat');
-    buf.writeln('  Generado: $fecha');
-    buf.writeln('══════════════════════════════════════');
+    buf.writeln(sep);
+    buf.writeln('REPORTE DE AVANCE — AdaptaMat');
+    buf.writeln('Fecha: $fecha');
+    buf.writeln(sep);
     buf.writeln();
 
-    // Resumen del grupo
+    // ── Resumen del grupo (tabla) ──────────────────────────────────────────
     buf.writeln('RESUMEN DEL GRUPO');
-    buf.writeln('─────────────────');
-    buf.writeln('Total estudiantes : ${_resumenGrupo.length}');
-
-    if (_resumenGrupo.isNotEmpty) {
-      final thetaPromedio = _resumenGrupo.fold<double>(
-            0,
-            (acc, r) => acc + (r['theta_actual'] as num).toDouble(),
-          ) /
-          _resumenGrupo.length;
-      buf.writeln('θ promedio        : ${thetaPromedio.toStringAsFixed(2)}');
-
-      final dist = <String, int>{
-        'Inicio': 0,
-        'En proceso': 0,
-        'Logrado': 0,
-      };
-      for (final r in _resumenGrupo) {
-        final nivel =
-            ResumenGrupo.nivelDesdeTheta((r['theta_actual'] as num).toDouble());
-        dist[nivel] = (dist[nivel] ?? 0) + 1;
-      }
-      buf.writeln();
-      buf.writeln('Distribución por nivel:');
-      dist.forEach((nivel, cantidad) {
-        buf.writeln('  ${nivel.padRight(12)}: $cantidad estudiante(s)');
-      });
-    }
-
-    // Patrones del grupo
-    if (_patronesGrupo.isNotEmpty) {
-      buf.writeln();
-      buf.writeln('PATRONES DE ERROR DEL GRUPO');
-      buf.writeln('───────────────────────────');
-      for (final p in _patronesGrupo) {
-        final codigo = p['codigo_patron'] as String;
-        final frecTotal = p['frecuencia_total'];
-        final afectados = p['estudiantes_afectados'];
-        buf.writeln(
-            '  $codigo — ${ResumenGrupo.descripcionPatron(codigo)}');
-        buf.writeln(
-            '    Frecuencia total: $frecTotal  |  Estudiantes afectados: $afectados');
-      }
-    }
-
-    // Detalle por estudiante
     buf.writeln();
-    buf.writeln('DETALLE POR ESTUDIANTE');
-    buf.writeln('──────────────────────');
+    buf.writeln('${'Estudiante'.padRight(20)}${'Nivel'.padRight(13)}Sesiones');
+    buf.writeln('─' * 40);
     for (final r in _resumenGrupo) {
-      final theta = (r['theta_actual'] as num).toDouble();
+      final nombre = (r['nombre'] as String? ?? '—');
+      final theta = (r['theta_actual'] as num?)?.toDouble() ?? 0.0;
       final nivel = ResumenGrupo.nivelDesdeTheta(theta);
-      buf.writeln('${r['nombre']}');
-      buf.writeln('  Nivel   : $nivel  (θ = ${theta.toStringAsFixed(2)})');
-      buf.writeln('  Sesiones: ${r['total_sesiones'] ?? 0}');
-      buf.writeln();
+      final sesiones = (r['total_sesiones'] as int?) ?? 0;
+      buf.writeln(
+          '${nombre.padRight(20)}${nivel.padRight(13)}$sesiones');
     }
+    if (_resumenGrupo.isEmpty) {
+      buf.writeln('Sin datos de sesiones aún.');
+    }
+    buf.writeln();
 
-    buf.writeln('══════════════════════════════════════');
+    // ── Patrones de error más frecuentes (lista numerada) ─────────────────
+    buf.writeln(sep);
+    buf.writeln('PATRONES DE ERROR MÁS FRECUENTES');
+    buf.writeln();
+    if (_patronesGrupo.isEmpty) {
+      buf.writeln('Sin patrones detectados aún.');
+    } else {
+      for (var i = 0; i < _patronesGrupo.length; i++) {
+        final p = _patronesGrupo[i];
+        final codigo = p['codigo_patron'] as String? ?? '—';
+        final frecTotal = (p['frecuencia_total'] as int?) ?? 0;
+        final desc = ResumenGrupo.descripcionPatron(codigo);
+        final label = frecTotal == 1 ? 'vez' : 'veces';
+        buf.writeln('${i + 1}. $desc — $frecTotal $label');
+      }
+    }
+    buf.writeln(sep);
+
     return buf.toString();
   }
 }
