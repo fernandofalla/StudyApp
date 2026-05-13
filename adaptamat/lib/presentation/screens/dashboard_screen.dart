@@ -2,7 +2,6 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:adaptamat/domain/usecases/resumen_grupo.dart';
 import 'package:adaptamat/presentation/blocs/dashboard_bloc.dart';
 import 'package:adaptamat/presentation/screens/exportacion_screen.dart';
 import 'package:adaptamat/presentation/screens/perfil_estudiante_screen.dart';
@@ -58,272 +57,174 @@ class _DashboardView extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        return Scaffold(
-          backgroundColor: Colors.grey.shade100,
-          appBar: AppBar(
-            backgroundColor: _azulOscuro,
-            foregroundColor: Colors.white,
-            title: const Text('Dashboard Docente'),
-            actions: [
-              if (state is DashboardCargado)
-                IconButton(
-                  icon: const Icon(Icons.file_download_outlined),
-                  tooltip: 'Exportar reporte',
-                  onPressed: () =>
-                      context.read<DashboardBloc>().add(const GenerarReporte()),
+        if (state is DashboardCargando ||
+            state is DashboardInicial ||
+            state is PerfilEstudianteCargado ||
+            state is ReporteGenerado) {
+          return Scaffold(
+            backgroundColor: Colors.grey.shade100,
+            appBar: _appBarSimple(context),
+            body: const Center(
+              child: CircularProgressIndicator(color: _azulOscuro),
+            ),
+          );
+        }
+
+        if (state is DashboardError) {
+          return Scaffold(
+            backgroundColor: Colors.grey.shade100,
+            appBar: _appBarSimple(context),
+            body: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.error_outline,
+                        color: Colors.red, size: 48),
+                    const SizedBox(height: 12),
+                    Text(state.mensaje, textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => context
+                          .read<DashboardBloc>()
+                          .add(const CargarDashboard()),
+                      child: const Text('Reintentar'),
+                    ),
+                  ],
                 ),
-              IconButton(
-                icon: const Icon(Icons.refresh_rounded),
-                tooltip: 'Actualizar',
-                onPressed: () =>
-                    context.read<DashboardBloc>().add(const CargarDashboard()),
               ),
-            ],
-          ),
-          body: _buildCuerpo(context, state),
-        );
+            ),
+          );
+        }
+
+        if (state is DashboardCargado) {
+          // DefaultTabController DEBE envolver el Scaffold para que
+          // el TabBar en el AppBar encuentre su controller ancestro.
+          return DefaultTabController(
+            length: 2,
+            child: Scaffold(
+              backgroundColor: Colors.grey.shade100,
+              appBar: AppBar(
+                backgroundColor: _azulOscuro,
+                foregroundColor: Colors.white,
+                title: const Text('Panel docente'),
+                bottom: const TabBar(
+                  labelColor: Colors.white,
+                  unselectedLabelColor: Colors.white60,
+                  indicatorColor: Colors.white,
+                  tabs: [
+                    Tab(text: 'Grupo'),
+                    Tab(text: 'Patrones de error'),
+                  ],
+                ),
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.download),
+                    tooltip: 'Exportar reporte',
+                    onPressed: () => context
+                        .read<DashboardBloc>()
+                        .add(const GenerarReporte()),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.refresh_rounded),
+                    tooltip: 'Actualizar',
+                    onPressed: () => context
+                        .read<DashboardBloc>()
+                        .add(const CargarDashboard()),
+                  ),
+                ],
+              ),
+              body: TabBarView(
+                children: [
+                  _TabGrupo(
+                    resumenGrupo: state.resumenGrupo,
+                    onSeleccionar: (id) => context
+                        .read<DashboardBloc>()
+                        .add(SeleccionarEstudiante(id)),
+                  ),
+                  _TabPatrones(patronesGrupo: state.patronesGrupo),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return const SizedBox.shrink();
       },
     );
   }
 
-  Widget _buildCuerpo(BuildContext context, DashboardState state) {
-    if (state is DashboardCargando || state is DashboardInicial) {
-      return const Center(
-        child: CircularProgressIndicator(color: _azulOscuro),
-      );
-    }
-
-    if (state is DashboardError) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.error_outline, color: Colors.red, size: 48),
-              const SizedBox(height: 12),
-              Text(state.mensaje, textAlign: TextAlign.center),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: () =>
-                    context.read<DashboardBloc>().add(const CargarDashboard()),
-                child: const Text('Reintentar'),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (state is DashboardCargado) {
-      if (state.resumenGrupo.isEmpty) {
-        return const Center(
-          child: Text(
-            'No hay estudiantes registrados.',
-            style: TextStyle(fontSize: 16, color: Colors.black54),
-          ),
-        );
-      }
-
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          _PanelGrupo(resumenGrupo: state.resumenGrupo),
-          if (state.patronesGrupo.isNotEmpty)
-            _PanelPatrones(patronesGrupo: state.patronesGrupo),
-          Expanded(
-            child: ListView.builder(
-              padding: const EdgeInsets.only(top: 8, bottom: 24),
-              itemCount: state.resumenGrupo.length,
-              itemBuilder: (_, i) {
-                final est = state.resumenGrupo[i];
-                return TarjetaEstudianteWidget(
-                  datos: est,
-                  onSeleccionar: (id) {
-                    context
-                        .read<DashboardBloc>()
-                        .add(SeleccionarEstudiante(id));
-                  },
-                );
-              },
-            ),
-          ),
-        ],
-      );
-    }
-
-    return const SizedBox.shrink();
-  }
-}
-
-// ─── Panel de resumen del grupo ───────────────────────────────────────────────
-
-class _PanelGrupo extends StatelessWidget {
-  final List<Map<String, dynamic>> resumenGrupo;
-  const _PanelGrupo({required this.resumenGrupo});
-
-  @override
-  Widget build(BuildContext context) {
-    final dist = <String, int>{
-      'Inicio': 0,
-      'En proceso': 0,
-      'Logrado': 0,
-    };
-    double sumaTheta = 0;
-    for (final r in resumenGrupo) {
-      final theta = (r['theta_actual'] as num).toDouble();
-      sumaTheta += theta;
-      final nivel = ResumenGrupo.nivelDesdeTheta(theta);
-      dist[nivel] = (dist[nivel] ?? 0) + 1;
-    }
-    final promTheta = resumenGrupo.isNotEmpty
-        ? sumaTheta / resumenGrupo.length
-        : 0.0;
-
-    return Container(
-      color: _azulOscuro,
-      padding: const EdgeInsets.fromLTRB(16, 14, 16, 18),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '${resumenGrupo.length} estudiante${resumenGrupo.length != 1 ? 's' : ''}',
-            style: const TextStyle(color: Colors.white70, fontSize: 13),
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              _StatCard(
-                label: 'θ promedio',
-                valor: promTheta.toStringAsFixed(2),
-              ),
-              const SizedBox(width: 10),
-              _StatCard(
-                label: 'Nivel grupo',
-                valor: ResumenGrupo.nivelDesdeTheta(promTheta),
-              ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          _BarraDistribucion(distribucion: dist, total: resumenGrupo.length),
-        ],
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  final String label;
-  final String valor;
-  const _StatCard({required this.label, required this.valor});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.12),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          children: [
-            Text(
-              valor,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              label,
-              style: const TextStyle(color: Colors.white70, fontSize: 11),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _BarraDistribucion extends StatelessWidget {
-  final Map<String, int> distribucion;
-  final int total;
-  const _BarraDistribucion(
-      {required this.distribucion, required this.total});
-
-  @override
-  Widget build(BuildContext context) {
-    if (total == 0) return const SizedBox.shrink();
-
-    final niveles = [
-      ('Inicio', const Color(0xFFC62828)),
-      ('En proceso', const Color(0xFFF9A825)),
-      ('Logrado', const Color(0xFF2E7D32)),
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Distribución de niveles',
-          style: TextStyle(color: Colors.white70, fontSize: 11),
-        ),
-        const SizedBox(height: 6),
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: Row(
-            children: niveles.map((entry) {
-              final count = distribucion[entry.$1] ?? 0;
-              if (count == 0) return const SizedBox.shrink();
-              return Expanded(
-                flex: count,
-                child: Container(
-                  height: 18,
-                  color: entry.$2,
-                  alignment: Alignment.center,
-                  child: Text(
-                    '$count',
-                    style: const TextStyle(
-                      fontSize: 11,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Row(
-          children: niveles.map((entry) {
-            final count = distribucion[entry.$1] ?? 0;
-            if (count == 0) return const SizedBox.shrink();
-            return Expanded(
-              flex: count,
-              child: Text(
-                entry.$1,
-                style: const TextStyle(color: Colors.white60, fontSize: 10),
-                textAlign: TextAlign.center,
-              ),
-            );
-          }).toList(),
+  AppBar _appBarSimple(BuildContext context) {
+    return AppBar(
+      backgroundColor: _azulOscuro,
+      foregroundColor: Colors.white,
+      title: const Text('Panel docente'),
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.refresh_rounded),
+          tooltip: 'Actualizar',
+          onPressed: () =>
+              context.read<DashboardBloc>().add(const CargarDashboard()),
         ),
       ],
     );
   }
 }
 
-// ─── Panel de patrones del grupo ─────────────────────────────────────────────
+// ─── Pestaña Grupo ────────────────────────────────────────────────────────────
 
-class _PanelPatrones extends StatelessWidget {
-  final List<Map<String, dynamic>> patronesGrupo;
-  const _PanelPatrones({required this.patronesGrupo});
+class _TabGrupo extends StatelessWidget {
+  final List<Map<String, dynamic>> resumenGrupo;
+  final void Function(int estudianteId) onSeleccionar;
+
+  const _TabGrupo({
+    required this.resumenGrupo,
+    required this.onSeleccionar,
+  });
 
   @override
   Widget build(BuildContext context) {
+    if (resumenGrupo.isEmpty) {
+      return const Center(
+        child: Text(
+          'Sin datos de sesiones aún',
+          style: TextStyle(fontSize: 16, color: Colors.black54),
+        ),
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.only(top: 8, bottom: 24),
+      itemCount: resumenGrupo.length,
+      itemBuilder: (_, i) {
+        return TarjetaEstudianteWidget(
+          datos: resumenGrupo[i],
+          onSeleccionar: onSeleccionar,
+        );
+      },
+    );
+  }
+}
+
+// ─── Pestaña Patrones de error ────────────────────────────────────────────────
+
+class _TabPatrones extends StatelessWidget {
+  final List<Map<String, dynamic>> patronesGrupo;
+
+  const _TabPatrones({required this.patronesGrupo});
+
+  @override
+  Widget build(BuildContext context) {
+    if (patronesGrupo.isEmpty) {
+      return const Center(
+        child: Text(
+          'Sin patrones detectados aún',
+          style: TextStyle(fontSize: 16, color: Colors.black54),
+        ),
+      );
+    }
+
     final maxFrecuencia = patronesGrupo.fold<int>(
       0,
       (m, p) {
@@ -332,36 +233,19 @@ class _PanelPatrones extends StatelessWidget {
       },
     );
 
-    return Container(
-      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: _azulOscuro.withValues(alpha: 0.2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            'Patrones frecuentes del grupo',
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87,
-            ),
-          ),
-          ...patronesGrupo.take(3).map((p) {
-            return BarraPatronWidget(
-              codigoPatron: p['codigo_patron'] as String,
-              frecuenciaTotal: (p['frecuencia_total'] as int?) ?? 0,
-              estudiantesAfectados:
-                  (p['estudiantes_afectados'] as int?) ?? 0,
-              maxFrecuencia: maxFrecuencia,
-            );
-          }),
-        ],
-      ),
+    return ListView.separated(
+      padding: const EdgeInsets.all(16),
+      itemCount: patronesGrupo.length,
+      separatorBuilder: (context2, i2) => const SizedBox(height: 4),
+      itemBuilder: (_, i) {
+        final p = patronesGrupo[i];
+        return BarraPatronWidget(
+          codigoPatron: p['codigo_patron'] as String,
+          frecuenciaTotal: (p['frecuencia_total'] as int?) ?? 0,
+          estudiantesAfectados: (p['estudiantes_afectados'] as int?) ?? 0,
+          maxFrecuencia: maxFrecuencia,
+        );
+      },
     );
   }
 }
