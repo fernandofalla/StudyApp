@@ -149,7 +149,64 @@ class _HomeScreenState extends State<HomeScreen> {
             subtitulo: 'Figuras y atributos geométricos',
             onTap: () => _navegarASesion('geometria'),
           ),
+          const SizedBox(height: 32),
+          Row(
+            children: [
+              Expanded(child: Divider(color: Colors.grey.shade400)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                child: Text(
+                  'Docente',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: Colors.grey.shade500,
+                    letterSpacing: 0.5,
+                  ),
+                ),
+              ),
+              Expanded(child: Divider(color: Colors.grey.shade400)),
+            ],
+          ),
+          const SizedBox(height: 16),
+          _BotonDocente(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DashboardScreen()),
+            ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _BotonDocente extends StatelessWidget {
+  final VoidCallback onTap;
+  const _BotonDocente({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    const grisOscuro = Color(0xFF424242);
+    return SizedBox(
+      height: 64,
+      child: OutlinedButton.icon(
+        onPressed: onTap,
+        icon: const Icon(Icons.school_rounded, color: grisOscuro),
+        label: const Text(
+          'Panel docente',
+          style: TextStyle(
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+            color: grisOscuro,
+          ),
+        ),
+        style: OutlinedButton.styleFrom(
+          side: const BorderSide(color: grisOscuro, width: 1.5),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          backgroundColor: Colors.white,
+        ),
       ),
     );
   }

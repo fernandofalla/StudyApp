@@ -500,3 +500,214 @@ NOTAS IMPORTANTES
 
 ═══════════════════════════════════════════════════════════════════════════════
 
+═══════════════════════════════════════════════════════════════════════════════
+CAPÍTULO 3 — PRUEBAS TÉCNICAS DEL DASHBOARD DOCENTE
+═══════════════════════════════════════════════════════════════════════════════
+
+CÓMO USAR ESTA SECCIÓN
+───────────────────────
+  Ejecuta cada prueba en orden. Por cada prueba:
+    1. Sigue los pasos indicados en el emulador o dispositivo.
+    2. Anota los valores exactos que ves en pantalla en los campos "___".
+    3. Marca con [X] el resultado que corresponda.
+    4. Si algo falla, describe brevemente qué pasó en "Observaciones".
+
+  Estas anotaciones son evidencia técnica para el Capítulo 3
+  del informe de seminario.
+
+ESTADO INICIAL REQUERIDO ANTES DE EMPEZAR
+──────────────────────────────────────────
+  - App instalada y corriendo en el emulador: flutter run
+  - BD limpia (si necesitas resetear: desinstalar la app del emulador
+    y volver a correr flutter run para que se recree desde cero)
+  - El estudiante "Estudiante Demo" debe existir (se crea automáticamente)
+
+───────────────────────────────────────────────────────────────────────────────
+PRUEBA 1 — Consistencia de datos entre dashboard y base de datos
+───────────────────────────────────────────────────────────────────────────────
+Objetivo: verificar que lo que muestra el dashboard coincide exactamente
+con lo que está guardado en la base de datos SQLite.
+
+PASOS:
+  1. En la app, presiona "Números y Operaciones" y completa una sesión
+     respondiendo al menos 5 preguntas (pueden ser bien o mal).
+     Cuando aparezca la pantalla de fin de sesión, presiona atrás.
+
+  2. Repite el paso 1 dos veces más. Al terminar habrás completado
+     3 sesiones en total.
+
+  3. Desde HomeScreen presiona "Panel docente".
+     En la pestaña "Grupo" verás la tarjeta del estudiante.
+
+  4. Anota aquí lo que muestra el dashboard:
+       Nombre en dashboard    : ___________________________
+       Nivel mostrado         : ___________________________ (Inicio / En proceso / Logrado)
+       Total sesiones mostrado: ___
+
+  5. Abre la base de datos con DB Browser for SQLite.
+     La BD está en el emulador. Para extraerla:
+       Android Studio → Device Explorer → data/data/com.example.adaptamat/databases/adaptamat.db
+       Clic derecho → Save As → guardar en tu PC → abrir con DB Browser.
+
+  6. En DB Browser ejecuta estas consultas y anota los resultados:
+
+     Consulta A — total de sesiones del estudiante:
+       SELECT COUNT(*) FROM sesion WHERE estudiante_id = 1;
+     Resultado en BD: ___
+
+     Consulta B — theta actual del estudiante:
+       SELECT theta_actual FROM estudiante WHERE id = 1;
+     Resultado en BD: ___
+
+     Consulta C — nivel calculado manualmente:
+       Si theta < 0      → Inicio
+       Si 0 <= theta < 1 → En proceso
+       Si theta >= 1     → Logrado
+     Nivel calculado: ___________________________
+
+  7. Compara dashboard vs base de datos:
+       Sesiones en dashboard: ___  /  Sesiones en BD (Consulta A): ___  → [X si igual]:
+       Nivel en dashboard   : ___  /  Nivel calculado (Consulta C): ___  → [X si igual]:
+
+RESULTADO:
+  [ ] PASÓ — todos los valores coinciden
+  [ ] PASÓ PARCIAL — coinciden pero con diferencia menor (describir abajo)
+  [ ] FALLÓ — hay diferencias (describir abajo)
+
+Observaciones:
+  ____________________________________________________________________________
+  ____________________________________________________________________________
+
+───────────────────────────────────────────────────────────────────────────────
+PRUEBA 2 — Actualización tras nueva sesión
+───────────────────────────────────────────────────────────────────────────────
+Objetivo: verificar que el dashboard refleja nuevas sesiones sin reiniciar la app.
+
+PASOS:
+  1. Abre el dashboard ("Panel docente") y anota el total de sesiones
+     que muestra actualmente:
+       Sesiones antes: ___
+
+  2. Presiona el botón atrás para volver a HomeScreen.
+     NO cierres la app.
+
+  3. Completa una sesión más en "Números y Operaciones" o "Geometría".
+
+  4. Vuelve al dashboard ("Panel docente" o el botón ← y entrar de nuevo).
+     Anota el nuevo total de sesiones:
+       Sesiones después: ___
+
+  5. Verifica que el número aumentó en exactamente 1:
+       Diferencia: ___ (debe ser 1)
+
+  6. Si el theta del estudiante cambió de rango (por ejemplo pasó de
+     Inicio a En proceso), verifica que el nivel en el dashboard
+     también cambió:
+       Nivel antes : ___________________________
+       Nivel después: ___________________________
+
+RESULTADO:
+  [ ] PASÓ — el contador aumentó en 1 y el nivel es correcto
+  [ ] FALLÓ — el contador no se actualizó (describir abajo)
+  [ ] FALLÓ — el nivel no cambió cuando debería haberlo hecho (describir abajo)
+
+Observaciones:
+  ____________________________________________________________________________
+  ____________________________________________________________________________
+
+───────────────────────────────────────────────────────────────────────────────
+PRUEBA 3 — Detección y visualización de patrón de error
+───────────────────────────────────────────────────────────────────────────────
+Objetivo: verificar que al cometer errores repetidos en el mismo subtema,
+el patrón aparece en el dashboard con la frecuencia correcta.
+
+QUÉ ES UN PATRÓN DE ERROR:
+  La app detecta patrones cuando un estudiante elige el mismo tipo
+  de respuesta incorrecta varias veces. Cada opción incorrecta tiene
+  un código de patrón asignado (PE-01 al PE-06). Cuando el mismo código
+  se activa 3 o más veces en un mismo subtema, queda registrado.
+
+PASOS:
+  1. Entra a "Números y Operaciones".
+
+  2. Cuando aparezca un ítem de CONTEO o ADICIÓN, elige siempre la
+     primera opción incorrecta que veas (la que NO es la correcta).
+     Repite esto al menos 5 veces en el mismo subtema.
+     Nota: puedes responder mal a propósito cuantas veces necesites.
+
+  3. Termina la sesión (presiona atrás cuando la app te lo permita
+     o llega al final de la sesión).
+
+  4. Abre el dashboard → pestaña "Patrones de error".
+     Anota lo que ves:
+       Código del patrón visible: ___
+       Nombre del patrón visible : ___________________________
+       Frecuencia visible        : ___
+       Estudiantes afectados     : ___
+
+  5. Verifica en DB Browser:
+       SELECT codigo_patron, frecuencia, ultima_deteccion
+       FROM patron_error WHERE estudiante_id = 1;
+     Frecuencia en BD: ___
+     Código en BD    : ___
+
+  6. Compara:
+       Frecuencia en dashboard: ___  /  Frecuencia en BD: ___  → [X si igual]:
+       Código en dashboard    : ___  /  Código en BD    : ___  → [X si igual]:
+
+RESULTADO:
+  [ ] PASÓ — el patrón aparece en el dashboard con la frecuencia correcta
+  [ ] PASÓ PARCIAL — aparece pero la frecuencia difiere (describir abajo)
+  [ ] FALLÓ — no aparece ningún patrón aunque se cometieron errores repetidos
+
+Observaciones:
+  ____________________________________________________________________________
+  ____________________________________________________________________________
+
+───────────────────────────────────────────────────────────────────────────────
+PRUEBA 4 — Generación y copia del reporte
+───────────────────────────────────────────────────────────────────────────────
+Objetivo: verificar que el reporte de texto incluye todos los datos y
+que el botón "Copiar reporte" funciona correctamente.
+
+REQUISITO PREVIO:
+  Haber completado las pruebas 1, 2 y 3 para tener datos reales en BD.
+
+PASOS:
+  1. Abre el dashboard ("Panel docente").
+
+  2. Anota cuántos estudiantes aparecen en la pestaña "Grupo":
+       Estudiantes visibles en dashboard: ___
+
+  3. Anota cuántos patrones aparecen en la pestaña "Patrones de error":
+       Patrones visibles en dashboard: ___
+
+  4. Presiona el ícono de descarga (⬇) en la esquina superior derecha
+     del AppBar. Se abre la pantalla "Exportar reporte".
+
+  5. Lee el reporte en pantalla y anota:
+       Estudiantes listados en el reporte: ___
+       Patrones listados en el reporte   : ___
+
+  6. Compara:
+       Estudiantes dashboard: ___  /  Estudiantes en reporte: ___  → [X si igual]:
+       Patrones dashboard   : ___  /  Patrones en reporte   : ___  → [X si igual]:
+
+  7. Presiona el botón "Copiar reporte".
+     Debe aparecer un mensaje "Reporte copiado al portapapeles".
+     Pega el texto en WhatsApp, bloc de notas o cualquier campo de texto
+     para verificar que el contenido llegó completo.
+       [ ] El mensaje de confirmación apareció
+       [ ] El texto pegado está completo y legible
+
+RESULTADO:
+  [ ] PASÓ — el reporte incluye todos los datos y la copia funciona
+  [ ] PASÓ PARCIAL — el reporte tiene datos pero falta alguno (describir abajo)
+  [ ] FALLÓ — el reporte está vacío o el botón copiar no funciona
+
+Observaciones:
+  ____________________________________________________________________________
+  ____________________________________________________________________________
+
+═══════════════════════════════════════════════════════════════════════════════
+
