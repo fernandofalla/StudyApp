@@ -2,10 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:adaptamat/domain/usecases/resumen_grupo.dart';
 import 'package:adaptamat/presentation/blocs/dashboard_bloc.dart';
 import 'package:adaptamat/presentation/screens/exportacion_screen.dart';
 import 'package:adaptamat/presentation/screens/perfil_estudiante_screen.dart';
-import 'package:adaptamat/presentation/widgets/tarjeta_estudiante_widget.dart';
 
 const _azulOscuro = Color(0xFF1F3864);
 
@@ -26,7 +26,35 @@ class _DashboardView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<DashboardBloc, DashboardState>(
+    return BlocConsumer<DashboardBloc, DashboardState>(
+      listenWhen: (_, current) =>
+          current is PerfilEstudianteCargado || current is ReporteGenerado,
+      listener: (context, state) {
+        if (state is PerfilEstudianteCargado) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => PerfilEstudianteScreen(
+                perfil: state.perfil,
+                historialTheta: state.historialTheta,
+              ),
+            ),
+          ).then((_) {
+            if (context.mounted) {
+              context.read<DashboardBloc>().add(const CargarDashboard());
+            }
+          });
+        }
+        if (state is ReporteGenerado) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) =>
+                  ExportacionScreen(textoReporte: state.textoReporte),
+            ),
+          );
+        }
+      },
       builder: (context, state) {
         return Scaffold(
           backgroundColor: Colors.grey.shade100,
@@ -35,18 +63,12 @@ class _DashboardView extends StatelessWidget {
             foregroundColor: Colors.white,
             title: const Text('Dashboard Docente'),
             actions: [
-              if (state is DashboardCargado && state.estudiantes.isNotEmpty)
+              if (state is DashboardCargado)
                 IconButton(
                   icon: const Icon(Icons.file_download_outlined),
                   tooltip: 'Exportar reporte',
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ExportacionScreen(
-                        estudiantes: state.estudiantes,
-                      ),
-                    ),
-                  ),
+                  onPressed: () =>
+                      context.read<DashboardBloc>().add(const GenerarReporte()),
                 ),
               IconButton(
                 icon: const Icon(Icons.refresh_rounded),
@@ -81,9 +103,8 @@ class _DashboardView extends StatelessWidget {
               Text(state.mensaje, textAlign: TextAlign.center),
               const SizedBox(height: 16),
               ElevatedButton(
-                onPressed: () => context
-                    .read<DashboardBloc>()
-                    .add(const CargarDashboard()),
+                onPressed: () =>
+                    context.read<DashboardBloc>().add(const CargarDashboard()),
                 child: const Text('Reintentar'),
               ),
             ],
@@ -93,7 +114,7 @@ class _DashboardView extends StatelessWidget {
     }
 
     if (state is DashboardCargado) {
-      if (state.estudiantes.isEmpty) {
+      if (state.resumenGrupo.isEmpty) {
         return const Center(
           child: Text(
             'No hay estudiantes registrados.',
@@ -105,22 +126,25 @@ class _DashboardView extends StatelessWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _PanelGrupo(state: state),
+          _PanelGrupo(resumenGrupo: state.resumenGrupo),
+          if (state.patronesGrupo.isNotEmpty)
+            _PanelPatrones(patronesGrupo: state.patronesGrupo),
           Expanded(
             child: ListView.builder(
               padding: const EdgeInsets.only(top: 8, bottom: 24),
-              itemCount: state.estudiantes.length,
+              itemCount: state.resumenGrupo.length,
               itemBuilder: (_, i) {
-                final est = state.estudiantes[i];
-                return TarjetaEstudianteWidget(
-                  estudiante: est,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          PerfilEstudianteScreen(estudiante: est),
-                    ),
-                  ),
+                final est = state.resumenGrupo[i];
+                return _TarjetaEstudiante(
+                  datos: est,
+                  onTap: () {
+                    final id = est['id'] as int?;
+                    if (id != null) {
+                      context
+                          .read<DashboardBloc>()
+                          .add(SeleccionarEstudiante(id));
+                    }
+                  },
                 );
               },
             ),
@@ -136,12 +160,26 @@ class _DashboardView extends StatelessWidget {
 // ─── Panel de resumen del grupo ───────────────────────────────────────────────
 
 class _PanelGrupo extends StatelessWidget {
-  final DashboardCargado state;
-  const _PanelGrupo({required this.state});
+  final List<Map<String, dynamic>> resumenGrupo;
+  const _PanelGrupo({required this.resumenGrupo});
 
   @override
   Widget build(BuildContext context) {
-    final dist = state.distribucionNiveles;
+    final dist = <String, int>{
+      'Inicio': 0,
+      'En proceso': 0,
+      'Logrado': 0,
+    };
+    double sumaTheta = 0;
+    for (final r in resumenGrupo) {
+      final theta = (r['theta_actual'] as num).toDouble();
+      sumaTheta += theta;
+      final nivel = ResumenGrupo.nivelDesdeTheta(theta);
+      dist[nivel] = (dist[nivel] ?? 0) + 1;
+    }
+    final promTheta = resumenGrupo.isNotEmpty
+        ? sumaTheta / resumenGrupo.length
+        : 0.0;
 
     return Container(
       color: _azulOscuro,
@@ -150,7 +188,7 @@ class _PanelGrupo extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '${state.estudiantes.length} estudiante${state.estudiantes.length != 1 ? 's' : ''}',
+            '${resumenGrupo.length} estudiante${resumenGrupo.length != 1 ? 's' : ''}',
             style: const TextStyle(color: Colors.white70, fontSize: 13),
           ),
           const SizedBox(height: 8),
@@ -158,18 +196,17 @@ class _PanelGrupo extends StatelessWidget {
             children: [
               _StatCard(
                 label: 'θ promedio',
-                valor: state.promedioTheta.toStringAsFixed(2),
+                valor: promTheta.toStringAsFixed(2),
               ),
               const SizedBox(width: 10),
               _StatCard(
-                label: 'Acierto prom.',
-                valor:
-                    '${(state.promedioAcierto * 100).toStringAsFixed(1)}%',
+                label: 'Nivel grupo',
+                valor: ResumenGrupo.nivelDesdeTheta(promTheta),
               ),
             ],
           ),
           const SizedBox(height: 10),
-          _BarraDistribucion(distribucion: dist, total: state.estudiantes.length),
+          _BarraDistribucion(distribucion: dist, total: resumenGrupo.length),
         ],
       ),
     );
@@ -196,7 +233,7 @@ class _StatCard extends StatelessWidget {
               valor,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -214,7 +251,8 @@ class _StatCard extends StatelessWidget {
 class _BarraDistribucion extends StatelessWidget {
   final Map<String, int> distribucion;
   final int total;
-  const _BarraDistribucion({required this.distribucion, required this.total});
+  const _BarraDistribucion(
+      {required this.distribucion, required this.total});
 
   @override
   Widget build(BuildContext context) {
@@ -239,10 +277,9 @@ class _BarraDistribucion extends StatelessWidget {
           child: Row(
             children: niveles.map((entry) {
               final count = distribucion[entry.$1] ?? 0;
-              final flex = count > 0 ? count : 0;
-              if (flex == 0) return const SizedBox.shrink();
+              if (count == 0) return const SizedBox.shrink();
               return Expanded(
-                flex: flex,
+                flex: count,
                 child: Container(
                   height: 18,
                   color: entry.$2,
@@ -276,6 +313,182 @@ class _BarraDistribucion extends StatelessWidget {
           }).toList(),
         ),
       ],
+    );
+  }
+}
+
+// ─── Panel de patrones del grupo ─────────────────────────────────────────────
+
+class _PanelPatrones extends StatelessWidget {
+  final List<Map<String, dynamic>> patronesGrupo;
+  const _PanelPatrones({required this.patronesGrupo});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: _azulOscuro.withValues(alpha: 0.2)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Patrones frecuentes del grupo',
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              color: Colors.black87,
+            ),
+          ),
+          const SizedBox(height: 8),
+          ...patronesGrupo.take(3).map((p) {
+            final codigo = p['codigo_patron'] as String;
+            final frecTotal = p['frecuencia_total'] ?? 0;
+            final afectados = p['estudiantes_afectados'] ?? 0;
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Row(
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: _azulOscuro.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      codigo,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: _azulOscuro,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      ResumenGrupo.descripcionPatron(codigo),
+                      style: const TextStyle(
+                          fontSize: 12, color: Colors.black87),
+                    ),
+                  ),
+                  Text(
+                    '$frecTotal×  $afectados est.',
+                    style: TextStyle(
+                        fontSize: 11, color: Colors.grey.shade600),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Tarjeta de estudiante (inline, basada en Map) ────────────────────────────
+
+class _TarjetaEstudiante extends StatelessWidget {
+  final Map<String, dynamic> datos;
+  final VoidCallback onTap;
+
+  const _TarjetaEstudiante({required this.datos, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final nombre = datos['nombre'] as String? ?? '—';
+    final theta = (datos['theta_actual'] as num?)?.toDouble() ?? 0.0;
+    final sesiones = datos['total_sesiones'] ?? 0;
+    final nivel = ResumenGrupo.nivelDesdeTheta(theta);
+    final colorNivel = ResumenGrupo.colorDesdeNivel(nivel);
+
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      elevation: 2,
+      shape:
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding:
+              const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: _azulOscuro.withValues(alpha: 0.1),
+                radius: 22,
+                child: Text(
+                  nombre.isNotEmpty ? nombre[0].toUpperCase() : '?',
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: _azulOscuro,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      nombre,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        _NivelChip(nivel: nivel, color: colorNivel),
+                        const SizedBox(width: 6),
+                        Text(
+                          'θ ${theta.toStringAsFixed(2)}  ·  $sesiones sesión${sesiones != 1 ? 'es' : ''}',
+                          style: TextStyle(
+                              fontSize: 12, color: Colors.grey.shade600),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_right_rounded, color: Colors.grey),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NivelChip extends StatelessWidget {
+  final String nivel;
+  final Color color;
+  const _NivelChip({required this.nivel, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.4)),
+      ),
+      child: Text(
+        nivel,
+        style: TextStyle(
+            fontSize: 11, color: color, fontWeight: FontWeight.w600),
+      ),
     );
   }
 }
