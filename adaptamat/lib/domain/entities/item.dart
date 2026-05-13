@@ -10,6 +10,7 @@ class Item {
   final List<String> opciones;
   final int respuestaCorrecta;
   final String? codigoPatronDistractor;
+  final String? figura;
 
   Item({
     this.id,
@@ -20,6 +21,7 @@ class Item {
     required this.opciones,
     required this.respuestaCorrecta,
     this.codigoPatronDistractor,
+    this.figura,
   });
 
   Item copyWith({
@@ -31,6 +33,7 @@ class Item {
     List<String>? opciones,
     int? respuestaCorrecta,
     String? codigoPatronDistractor,
+    String? figura,
   }) {
     return Item(
       id: id ?? this.id,
@@ -41,6 +44,7 @@ class Item {
       opciones: opciones ?? this.opciones,
       respuestaCorrecta: respuestaCorrecta ?? this.respuestaCorrecta,
       codigoPatronDistractor: codigoPatronDistractor ?? this.codigoPatronDistractor,
+      figura: figura ?? this.figura,
     );
   }
 }

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:adaptamat/domain/entities/item.dart';
+import 'package:adaptamat/presentation/widgets/figura_widget.dart';
 
 const _azulOscuro = Color(0xFF1F3864);
 
@@ -36,6 +37,10 @@ class _ItemWidgetState extends State<ItemWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            if (widget.item.figura != null) ...[
+              FiguraWidget(codigo: widget.item.figura!),
+              const SizedBox(height: 16),
+            ],
             Text(
               widget.item.enunciado,
               style: const TextStyle(

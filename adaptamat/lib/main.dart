@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:adaptamat/core/database/database_helper.dart';
+import 'package:adaptamat/data/datasources/dashboard_datasource.dart';
 import 'package:adaptamat/data/datasources/estudiante_datasource.dart';
 import 'package:adaptamat/data/datasources/item_sesion_datasource.dart';
 import 'package:adaptamat/domain/entities/estudiante.dart';
@@ -32,7 +33,8 @@ void main() async {
           enunciado: e['enunciado'] as String,
           opciones: List<String>.from(e['opciones'] as List),
           respuestaCorrecta: e['respuesta_correcta'] as int,
-          codigoPatronDistractor: e['codigo_patron_distractor'] as String,
+          codigoPatronDistractor: e['codigo_patron_distractor'] as String?,
+          figura: e['figura'] as String?,
         );
       }).toList();
       await itemDs.insertarLote(items);
@@ -52,6 +54,17 @@ void main() async {
       ));
     }
   } catch (_) {}
+
+  // VERIFICACIÓN TEMPORAL — eliminar antes de entrega
+  try {
+    final dashDs = DashboardDatasource();
+    final resumen = await dashDs.obtenerResumenGrupo();
+    // ignore: avoid_print
+    print('[DashboardDatasource] obtenerResumenGrupo → ${resumen.length} filas: $resumen');
+  } catch (e) {
+    // ignore: avoid_print
+    print('[DashboardDatasource] error en verificación: $e');
+  }
 
   runApp(const AdaptaMatApp());
 }

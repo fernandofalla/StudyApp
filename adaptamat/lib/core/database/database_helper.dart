@@ -25,9 +25,16 @@ class DatabaseHelper {
 
     return openDatabase(
       path,
-      version: 1,
+      version: 2,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (oldVersion < 2) {
+      await db.execute('ALTER TABLE item ADD COLUMN figura TEXT');
+    }
   }
 
   Future<void> _onCreate(Database db, int version) async {
@@ -52,7 +59,8 @@ class DatabaseHelper {
         enunciado TEXT NOT NULL,
         opciones TEXT NOT NULL,
         respuesta_correcta INTEGER NOT NULL,
-        codigo_patron_distractor TEXT
+        codigo_patron_distractor TEXT,
+        figura TEXT
       )
     ''');
 
@@ -115,6 +123,7 @@ class DatabaseHelper {
     );
 
     // Inserción inicial de contenido de remediación (PE-01 al PE-06)
+
     await db.insert('contenido_remediacion', {
       'codigo_patron': 'PE-01',
       'contenido':

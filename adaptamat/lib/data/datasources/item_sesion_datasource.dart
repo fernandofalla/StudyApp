@@ -21,6 +21,7 @@ class ItemDatasource {
         'opciones': jsonEncode(item.opciones),
         'respuesta_correcta': item.respuestaCorrecta,
         'codigo_patron_distractor': item.codigoPatronDistractor,
+        'figura': item.figura,
       });
     }
   }
@@ -43,6 +44,7 @@ class ItemDatasource {
         opciones: List<String>.from(jsonDecode(map['opciones'])),
         respuestaCorrecta: map['respuesta_correcta'],
         codigoPatronDistractor: map['codigo_patron_distractor'],
+        figura: map['figura'] as String?,
       );
     }));
   }
@@ -61,6 +63,7 @@ class ItemDatasource {
         opciones: List<String>.from(jsonDecode(map['opciones'])),
         respuestaCorrecta: map['respuesta_correcta'],
         codigoPatronDistractor: map['codigo_patron_distractor'],
+        figura: map['figura'] as String?,
       );
     }));
   }

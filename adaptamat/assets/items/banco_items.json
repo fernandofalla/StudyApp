@@ -6,7 +6,8 @@
     "enunciado": "¿Cuántos palitos hay en la imagen?",
     "opciones": ["2", "3", "4", "5"],
     "respuesta_correcta": 1,
-    "codigo_patron_distractor": "PE-01"
+    "codigo_patron_distractor": "PE-01",
+    "figura": "palitos_3"
   },
   {
     "tema": "numeros_y_operaciones",
@@ -15,7 +16,8 @@
     "enunciado": "Cuenta los círculos azules. ¿Cuántos son?",
     "opciones": ["4", "5", "6", "7"],
     "respuesta_correcta": 2,
-    "codigo_patron_distractor": "PE-01"
+    "codigo_patron_distractor": "PE-01",
+    "figura": "circulos_azules_6"
   },
   {
     "tema": "numeros_y_operaciones",
@@ -24,7 +26,8 @@
     "enunciado": "¿Cuántas manzanas hay en el árbol?",
     "opciones": ["6", "7", "8", "9"],
     "respuesta_correcta": 2,
-    "codigo_patron_distractor": "PE-01"
+    "codigo_patron_distractor": "PE-01",
+    "figura": "manzanas_8"
   },
   {
     "tema": "numeros_y_operaciones",
@@ -114,7 +117,8 @@
     "enunciado": "¿Cuántos lados tiene un cuadrado?",
     "opciones": ["2", "3", "4", "5"],
     "respuesta_correcta": 2,
-    "codigo_patron_distractor": "PE-05"
+    "codigo_patron_distractor": "PE-05",
+    "figura": "cuadrado"
   },
   {
     "tema": "geometria",
@@ -123,7 +127,8 @@
     "enunciado": "¿Cuántos vértices tiene un triángulo?",
     "opciones": ["2", "3", "4", "5"],
     "respuesta_correcta": 1,
-    "codigo_patron_distractor": "PE-05"
+    "codigo_patron_distractor": "PE-05",
+    "figura": "triangulo"
   },
   {
     "tema": "geometria",
@@ -132,7 +137,8 @@
     "enunciado": "¿Cuál de estas formas tiene más lados?",
     "opciones": ["triángulo", "cuadrado", "pentágono", "círculo"],
     "respuesta_correcta": 2,
-    "codigo_patron_distractor": "PE-05"
+    "codigo_patron_distractor": "PE-05",
+    "figura": "comparar_formas"
   },
   {
     "tema": "geometria",
@@ -141,7 +147,8 @@
     "enunciado": "¿Cuál es el nombre de esta forma con 4 lados iguales?",
     "opciones": ["rectángulo", "cuadrado", "rombo", "trapecio"],
     "respuesta_correcta": 1,
-    "codigo_patron_distractor": "PE-05"
+    "codigo_patron_distractor": "PE-05",
+    "figura": "cuadrado"
   },
   {
     "tema": "geometria",
@@ -150,7 +157,8 @@
     "enunciado": "¿A cuál de estas figuras se parece un dado?",
     "opciones": ["círculo", "cuadrado", "cubo", "esfera"],
     "respuesta_correcta": 2,
-    "codigo_patron_distractor": "PE-06"
+    "codigo_patron_distractor": "PE-06",
+    "figura": "cubo"
   },
   {
     "tema": "geometria",
@@ -159,6 +167,7 @@
     "enunciado": "¿Cuál grupo tiene solo figuras con ángulos?",
     "opciones": ["círculo y esfera", "triángulo y cuadrado", "pelota y círculo", "esfera y cilindro"],
     "respuesta_correcta": 1,
-    "codigo_patron_distractor": "PE-06"
+    "codigo_patron_distractor": "PE-06",
+    "figura": "grupos_figuras"
   }
 ]

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:adaptamat/data/datasources/estudiante_datasource.dart';
 import 'package:adaptamat/domain/entities/estudiante.dart';
+import 'package:adaptamat/presentation/screens/dashboard_screen.dart';
 import 'package:adaptamat/presentation/screens/sesion_screen.dart';
 
 // Estudiante de prueba usado cuando la BD no está disponible (ej: web).
@@ -71,6 +72,16 @@ class _HomeScreenState extends State<HomeScreen> {
         foregroundColor: Colors.white,
         title: const Text('AdaptaMat'),
         elevation: 0,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.school_outlined),
+            tooltip: 'Dashboard docente',
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const DashboardScreen()),
+            ),
+          ),
+        ],
       ),
       body: _cargando
           ? const Center(child: CircularProgressIndicator())
