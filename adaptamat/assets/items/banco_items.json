@@ -32,9 +32,27 @@
   {
     "tema": "numeros_y_operaciones",
     "subtema": "conteo",
+    "dificultad_b": -0.2,
+    "enunciado": "¿Qué número sigue en la secuencia: 1, 2, 3, 4, ___?",
+    "opciones": ["3", "4", "5", "6"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-01"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "conteo",
     "dificultad_b": 0.2,
     "enunciado": "Si tienes 5 caramelos y tu amiga te da 3 más, ¿cuántos tienes ahora?",
     "opciones": ["6", "7", "8", "9"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-02"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "conteo",
+    "dificultad_b": 0.8,
+    "enunciado": "En una canasta hay 7 panes y agregas 4 más. ¿Cuántos panes hay en total contando de uno en uno?",
+    "opciones": ["9", "10", "11", "12"],
     "respuesta_correcta": 2,
     "codigo_patron_distractor": "PE-02"
   },
@@ -59,10 +77,37 @@
   {
     "tema": "numeros_y_operaciones",
     "subtema": "valor_posicional",
+    "dificultad_b": -0.1,
+    "enunciado": "¿Cuántas unidades hay en una decena?",
+    "opciones": ["1", "5", "10", "100"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-03"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "valor_posicional",
+    "dificultad_b": 0.3,
+    "enunciado": "En el número 35, ¿cuánto vale el dígito 3?",
+    "opciones": ["3", "30", "35", "53"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-03"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "valor_posicional",
     "dificultad_b": 0.8,
     "enunciado": "En el número 47, ¿cuál es el dígito de las decenas?",
     "opciones": ["4", "7", "47", "74"],
     "respuesta_correcta": 0,
+    "codigo_patron_distractor": "PE-03"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "valor_posicional",
+    "dificultad_b": 1.4,
+    "enunciado": "Si tienes 3 decenas y 5 unidades, ¿qué número se forma?",
+    "opciones": ["8", "35", "53", "305"],
+    "respuesta_correcta": 1,
     "codigo_patron_distractor": "PE-03"
   },
   {
@@ -77,6 +122,15 @@
   {
     "tema": "numeros_y_operaciones",
     "subtema": "adicion",
+    "dificultad_b": -0.4,
+    "enunciado": "¿Cuánto es 4 + 2?",
+    "opciones": ["5", "6", "7", "8"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-02"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "adicion",
     "dificultad_b": -0.2,
     "enunciado": "¿Cuánto es 3 + 4?",
     "opciones": ["5", "6", "7", "8"],
@@ -86,11 +140,38 @@
   {
     "tema": "numeros_y_operaciones",
     "subtema": "adicion",
+    "dificultad_b": 0.3,
+    "enunciado": "¿Cuánto es 6 + 3?",
+    "opciones": ["7", "8", "9", "10"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-02"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "adicion",
     "dificultad_b": 1.0,
     "enunciado": "¿Cuánto es 8 + 5?",
     "opciones": ["11", "12", "13", "14"],
-    "respuesta_correcta": 1,
+    "respuesta_correcta": 2,
     "codigo_patron_distractor": "PE-02"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "adicion",
+    "dificultad_b": 1.5,
+    "enunciado": "Pedro tiene 9 canicas y encuentra 6 más. ¿Cuántas canicas tiene en total?",
+    "opciones": ["13", "14", "15", "16"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-02"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "sustraccion",
+    "dificultad_b": -1.1,
+    "enunciado": "¿Cuánto es 3 - 1?",
+    "opciones": ["1", "2", "3", "4"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-04"
   },
   {
     "tema": "numeros_y_operaciones",
@@ -104,9 +185,36 @@
   {
     "tema": "numeros_y_operaciones",
     "subtema": "sustraccion",
+    "dificultad_b": 0.0,
+    "enunciado": "¿Cuánto es 7 - 3?",
+    "opciones": ["2", "3", "4", "5"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-04"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "sustraccion",
+    "dificultad_b": 0.4,
+    "enunciado": "¿Cuánto es 9 - 4?",
+    "opciones": ["3", "4", "5", "6"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-04"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "sustraccion",
     "dificultad_b": 1.2,
     "enunciado": "¿Cuánto es 12 - 7?",
     "opciones": ["3", "4", "5", "6"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-04"
+  },
+  {
+    "tema": "numeros_y_operaciones",
+    "subtema": "sustraccion",
+    "dificultad_b": 1.6,
+    "enunciado": "María tenía 15 lápices y regaló 6. ¿Cuántos lápices le quedan?",
+    "opciones": ["7", "8", "9", "10"],
     "respuesta_correcta": 2,
     "codigo_patron_distractor": "PE-04"
   },
@@ -123,6 +231,15 @@
   {
     "tema": "geometria",
     "subtema": "atributos_geometricos",
+    "dificultad_b": -1.3,
+    "enunciado": "Un círculo no tiene esquinas ni lados rectos. ¿Cuántos vértices tiene?",
+    "opciones": ["0", "1", "2", "4"],
+    "respuesta_correcta": 0,
+    "codigo_patron_distractor": "PE-05"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "atributos_geometricos",
     "dificultad_b": -0.8,
     "enunciado": "¿Cuántos vértices tiene un triángulo?",
     "opciones": ["2", "3", "4", "5"],
@@ -133,12 +250,59 @@
   {
     "tema": "geometria",
     "subtema": "atributos_geometricos",
+    "dificultad_b": -0.3,
+    "enunciado": "¿Cuántos lados rectos tiene un triángulo?",
+    "opciones": ["1", "2", "3", "4"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-05",
+    "figura": "triangulo"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "atributos_geometricos",
+    "dificultad_b": 0.1,
+    "enunciado": "¿Cómo son los cuatro lados de un cuadrado?",
+    "opciones": ["todos curvos", "todos iguales", "dos largos y dos cortos", "todos diferentes"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-05",
+    "figura": "cuadrado"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "atributos_geometricos",
     "dificultad_b": 0.5,
     "enunciado": "¿Cuál de estas formas tiene más lados?",
     "opciones": ["triángulo", "cuadrado", "pentágono", "círculo"],
     "respuesta_correcta": 2,
     "codigo_patron_distractor": "PE-05",
     "figura": "comparar_formas"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "atributos_geometricos",
+    "dificultad_b": 1.0,
+    "enunciado": "¿En qué se parece un rectángulo a un cuadrado?",
+    "opciones": ["tienen 3 lados", "ambos tienen 4 vértices", "tienen lados curvos", "tienen 5 esquinas"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-05"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "atributos_geometricos",
+    "dificultad_b": 1.5,
+    "enunciado": "¿Cuál es la diferencia entre un cuadrado y un rectángulo?",
+    "opciones": ["el cuadrado tiene 3 lados", "el rectángulo tiene todos los lados iguales", "el rectángulo tiene 2 pares de lados de diferente longitud", "el cuadrado no tiene esquinas"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-05"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "figuras_geometricas",
+    "dificultad_b": -1.4,
+    "enunciado": "¿Cómo se llama la figura redonda que no tiene esquinas?",
+    "opciones": ["cuadrado", "triángulo", "círculo", "rectángulo"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-05"
   },
   {
     "tema": "geometria",
@@ -153,10 +317,104 @@
   {
     "tema": "geometria",
     "subtema": "figuras_geometricas",
+    "dificultad_b": -0.5,
+    "enunciado": "¿Qué figura geométrica tiene exactamente 3 lados?",
+    "opciones": ["cuadrado", "círculo", "triángulo", "rectángulo"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-05",
+    "figura": "triangulo"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "figuras_geometricas",
+    "dificultad_b": -0.1,
+    "enunciado": "La puerta del salón de clases suele tener forma de...",
+    "opciones": ["círculo", "triángulo", "rectángulo", "pentágono"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-05"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "figuras_geometricas",
     "dificultad_b": 0.3,
     "enunciado": "¿A cuál de estas figuras se parece un dado?",
     "opciones": ["círculo", "cuadrado", "cubo", "esfera"],
     "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-06",
+    "figura": "cubo"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "figuras_geometricas",
+    "dificultad_b": 0.7,
+    "enunciado": "¿A cuál cuerpo geométrico se parece una pelota de fútbol?",
+    "opciones": ["cubo", "esfera", "cono", "cilindro"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-06"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "figuras_geometricas",
+    "dificultad_b": 1.1,
+    "enunciado": "¿A cuál cuerpo geométrico se parece una lata de refresco?",
+    "opciones": ["cubo", "pirámide", "cilindro", "esfera"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-06"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "figuras_geometricas",
+    "dificultad_b": 1.6,
+    "enunciado": "¿Qué figura geométrica plana forma cada una de las caras de un cubo?",
+    "opciones": ["triángulo", "cuadrado", "círculo", "rectángulo"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-06",
+    "figura": "cubo"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "clasificacion_geometrica",
+    "dificultad_b": -1.2,
+    "enunciado": "¿Cuál de los siguientes objetos rueda fácilmente por el suelo?",
+    "opciones": ["una caja de zapatos", "una pelota", "un libro", "un dado"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-06"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "clasificacion_geometrica",
+    "dificultad_b": -0.7,
+    "enunciado": "¿Cuál de estas figuras tiene solo líneas curvas?",
+    "opciones": ["triángulo", "cuadrado", "círculo", "rectángulo"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-06"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "clasificacion_geometrica",
+    "dificultad_b": -0.2,
+    "enunciado": "¿Cuál figura NO pertenece al grupo de figuras con lados rectos?",
+    "opciones": ["triángulo", "cuadrado", "círculo", "rectángulo"],
+    "respuesta_correcta": 2,
+    "codigo_patron_distractor": "PE-06"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "clasificacion_geometrica",
+    "dificultad_b": 0.2,
+    "enunciado": "Si agrupamos las figuras por cantidad de 4 lados, ¿con cuál se agrupa el rectángulo?",
+    "opciones": ["triángulo", "cuadrado", "círculo", "óvalo"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-06",
+    "figura": "cuadrado"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "clasificacion_geometrica",
+    "dificultad_b": 0.6,
+    "enunciado": "¿Cuál de los siguientes pares contiene solo cuerpos geométricos con volumen?",
+    "opciones": ["cuadrado y círculo", "cubo y esfera", "triángulo y rectángulo", "línea y punto"],
+    "respuesta_correcta": 1,
     "codigo_patron_distractor": "PE-06",
     "figura": "cubo"
   },
@@ -169,5 +427,25 @@
     "respuesta_correcta": 1,
     "codigo_patron_distractor": "PE-06",
     "figura": "grupos_figuras"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "clasificacion_geometrica",
+    "dificultad_b": 1.3,
+    "enunciado": "Si separamos objetos en los que pueden rodar y los que solo se deslizan, ¿en qué grupo va un cubo?",
+    "opciones": ["los que ruedan", "los que solo se deslizan", "en ambos grupos", "en ninguno"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-06",
+    "figura": "cubo"
+  },
+  {
+    "tema": "geometria",
+    "subtema": "clasificacion_geometrica",
+    "dificultad_b": 1.7,
+    "enunciado": "¿Por qué una moneda y un círculo se clasifican diferente a un dado y un cubo?",
+    "opciones": ["porque las monedas no son redondas", "porque la moneda y el círculo son planos y el cubo tiene 3 dimensiones", "porque el cubo tiene lados curvos", "porque no tienen diferencias"],
+    "respuesta_correcta": 1,
+    "codigo_patron_distractor": "PE-06",
+    "figura": "cubo"
   }
 ]
